@@ -186,7 +186,7 @@ function that decides which to call based on the value of 'system-type':
 #+begin_src elisp
   (defun leader--get-port-info-windows ()
     "Fetch relevant port information via Powershell, then returns it as a property list.
-  Returns a vector containing property lists that correspond to each active port, or nil.
+  Returns a list containing property lists that correspond to each active port, or nil.
   The properties that will be returned are:
   :vid - The Vendor ID number of the device
   :pid - The Product ID number of the device
@@ -200,38 +200,39 @@ function that decides which to call based on the value of 'system-type':
   	 )
       (when info-list
         (if (arrayp info-list)
-  	  (seq-map (lambda (port-plist)
-  		     (let* (
-  			    (devid (plist-get port-plist :PNPDeviceID))
-  			    (vid (prog2
-  				     (string-match "VID_\\(.\\{4\\}\\)" devid)
-  				     (match-string 1 devid)))
-  			    (pid (prog2
-  				     (string-match "PID_\\(.\\{4\\}\\)" devid)
-  				     (match-string 1 devid)))
-  			    )
-  		       (list
-  			:port (plist-get port-plist :DeviceID)
-  			:vid vid
-  			:pid pid
-  			)))
-  		   info-list)
-  	(make-vector 1 (list
-  			:port (plist-get info-list :DeviceID)
-  			:vid (let ((devid (plist-get info-list :PNPDeviceID)))
-  			       (string-match "VID_\\(.\\{4\\}\\)" devid)
-  			       (match-string 1 devid))
-  			:pid (let ((devid (plist-get info-list :PNPDeviceID)))
-  			       (string-match "PID_\\(.\\{4\\}\\)" devid)
-  			       (match-string 1 devid))
-  			))
-  	)
+  	  (setq info-list (append info-list 'nil))
+  	  (mapcar (lambda (port-plist)
+  		    (let* (
+  			   (devid (plist-get port-plist :PNPDeviceID))
+  			   (vid (prog2
+  				    (string-match "VID_\\(.\\{4\\}\\)" devid)
+  				    (match-string 1 devid)))
+  			   (pid (prog2
+  				    (string-match "PID_\\(.\\{4\\}\\)" devid)
+  				    (match-string 1 devid)))
+  			   )
+  		      (list
+  		       :port (plist-get port-plist :DeviceID)
+  		       :vid vid
+  		       :pid pid
+  		       )))
+  		  info-list)
+  	(list (list ;;; so it can 
+  	       :port (plist-get info-list :DeviceID)
+  	       :vid (let ((devid (plist-get info-list :PNPDeviceID)))
+  		      (string-match "VID_\\(.\\{4\\}\\)" devid)
+  		      (match-string 1 devid))
+  	       :pid (let ((devid (plist-get info-list :PNPDeviceID)))
+  		      (string-match "PID_\\(.\\{4\\}\\)" devid)
+  		      (match-string 1 devid))
+  	       )))
         )
       )
     )
+  )
 
 
-  
+
   (defun leader--get-port-info-gnu/linux ()
     (let ((usbs-newlined (shell-command-check "ls -1 /dev/ttyUSB*" "cannot access" t)))
       (when usbs-newlined
@@ -243,13 +244,12 @@ function that decides which to call based on the value of 'system-type':
   						(push (buffer-substring-no-properties (point) (1- (re-search-forward "\n"))) usb-list)))))
   	    )
   	(seq-map (lambda (port-name)
-  		  ()
-  		  (list
-  		   :port port-name
-  		   :vid 'nil
-  		   :pid 'nil
-  		   ))
-  		usb-list)
+  		   (list
+  		    :port port-name
+  		    :vid 'nil
+  		    :pid 'nil
+  		    ))
+  		 usb-list)
   	)
         )
       )
@@ -319,3 +319,4 @@ Turns out, there's not a particularly straightforward way to fetch relevant USB 
 package, which not only provides USB port details for all active ports, but also decodes the VID & PID for us, so it's just a matter of extracting the contents
 of the shell command.
 ** TODO Give relevant functions relevant descriptions
+** TODO Setup and test port information fetching
