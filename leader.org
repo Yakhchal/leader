@@ -217,7 +217,7 @@ function that decides which to call based on the value of 'system-type':
   		       :pid pid
   		       )))
   		  info-list)
-  	(list (list ;;; so it can 
+  	(list (list ;;; so it can mapcar accordingly
   	       :port (plist-get info-list :DeviceID)
   	       :vid (let ((devid (plist-get info-list :PNPDeviceID)))
   		      (string-match "VID_\\(.\\{4\\}\\)" devid)
