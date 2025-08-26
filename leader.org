@@ -64,7 +64,6 @@ Contains miscellanious functions. Rename these to be leader-specific as to preve
   			  (proj-dir (expand-file-name potential-proj-makefile-dir))
   			  )
           	      (list :mcu mcu :dir proj-dir :name prog-name))))))))
-        )
 #+end_src
 ** Core Data
 Contains constants of relevant data, such as the list of valid microcontroller units, VID/PIDs (soon), etc.
@@ -112,7 +111,7 @@ Interactive functions for use by the end-user. Lots of cleaning up to be done he
   	    (cur-cmd (car cmd-cell))
   	    (sh-cmd-check-args (cdr cmd-cell))
   	    )
-  	(Unless (apply (function shell-command-check) sh-cmd-check-args)
+  	(unless (apply (function shell-command-check) sh-cmd-check-args)
   	  (setq missing-cmds (concat missing-cmds cur-cmds "\n")))))
       (if (string-empty-p missing-cmds)
   	(message "All the relevant commands are present!")
