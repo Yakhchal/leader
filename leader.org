@@ -332,7 +332,7 @@ leader could take a crack at guessing the appropriate programmer based on the VI
   	 (port-choice (cdr (assoc (completing-read "Which port is the programmer connected to?" ports-formatted-alist) ports-formatted-alist)))
   	 (programmer (cdr (assoc (completing-read "Which programmer are you using?" (mapcar (lambda (cell) (car cell)) avr-programmer-list) nil t) avr-programmer-list)))
   	 (proj-info-plist (fetch-current-project))
-  	 (mcu (plist-get proj-info-plist :mcu))
+  	 (mcu (plist-get proj-info-plist :mcu-avrdude))
   	 (proj-dir (plist-get proj-info-plist :dir))
   	 (prog-name (plist-get proj-info-plist :name))
   	 )
